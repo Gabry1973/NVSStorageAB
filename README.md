@@ -82,6 +82,16 @@ pio run -e BasicSettings -t upload -t monitor
 
 Per aggiungere un nuovo esempio basta creare la cartella in `examples/` e un ambiente con `custom_example = <NomeCartella>`.
 
+#### Test
+
+In `test/test_host/` ci sono i test unitari (Unity) che girano sul PC, senza scheda, usando una NVS simulata in memoria con iniezione di errori di lettura/scrittura:
+
+```sh
+pio test -e host
+```
+
+Al primo avvio PlatformIO scarica automaticamente la piattaforma `windows_x86` e il compilatore MinGW. I test coprono A/B, anti-wear, slot corrotti, upgrade/migrazioni, `FUTURE_VERSION`, errori NVS, overflow della sequence e la compatibilità del formato su flash con l'implementazione originale (`test/test_host/legacy/`).
+
 ## Concetto A/B
 
 Per uno storage dichiarato così:
