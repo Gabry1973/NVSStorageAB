@@ -24,7 +24,7 @@ Libreria Arduino per **ESP32** per salvare strutture C/C++ nella NVS in modo rob
 
 - ESP32
 - Arduino framework / Arduino-ESP32
-- `Preferences` (inclusa nel core ESP32)
+- API NVS di ESP-IDF (`nvs.h`, inclusa nel core ESP32; la NVS viene inizializzata dal core Arduino)
 - La struttura `T` deve essere `trivially copyable` e `standard layout`.
 
 ## Installazione
@@ -43,6 +43,44 @@ Libreria Arduino per **ESP32** per salvare strutture C/C++ nella NVS in modo rob
 ### Installazione manuale
 
 Copiare la cartella `NVSStorageAB` nella directory `libraries` di Arduino.
+
+### PlatformIO / pioarduino (VS Code)
+
+La libreria include un manifest `library.json`, quindi PlatformIO la riconosce direttamente. Nel `platformio.ini` del proprio progetto:
+
+```ini
+[env:esp32dev]
+platform = https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip
+framework = arduino
+board = esp32dev
+lib_deps =
+    ; da repository git
+    https://github.com/<utente>/NVSStorageAB.git
+    ; oppure da una copia locale (le modifiche sono viste subito)
+    ; symlink://D:/percorso/NVSStorageAB
+```
+
+In alternativa si può copiare la cartella `NVSStorageAB` dentro la cartella `lib/` del progetto.
+
+> La piattaforma pioarduino `stable` richiede il core pioarduino ≥ 6.2.0: usare l'estensione VS Code **pioarduino IDE** (al posto di "PlatformIO IDE").
+> Se la build fallisce con `IncompatiblePlatform: ... depends on PlatformIO Core >=6.2.0`, il core installato è vecchio. Aggiornarlo con (VS Code chiuso):
+>
+> ```powershell
+> & "$env:USERPROFILE\.platformio\penv\Scripts\python.exe" -m pip install -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.2.0.zip
+> ```
+>
+> Non usare `pio upgrade`: installerebbe il core PlatformIO ufficiale da PyPI al posto di quello pioarduino.
+
+#### Compilare gli esempi della libreria
+
+Aprendo la cartella della libreria in VS Code, il `platformio.ini` incluso definisce un ambiente per ogni esempio (`BasicSettings`, `PowerFailData`, `VersionUpgrade`). Selezionare l'ambiente dalla barra di stato di PlatformIO e usare Build/Upload/Monitor, oppure da terminale:
+
+```sh
+pio run                      # compila tutti gli esempi
+pio run -e BasicSettings -t upload -t monitor
+```
+
+Per aggiungere un nuovo esempio basta creare la cartella in `examples/` e un ambiente con `custom_example = <NomeCartella>`.
 
 ## Concetto A/B
 
@@ -103,7 +141,7 @@ struct LCORxSettings {
 void defaultSettings(LCORxSettings &s) {
     s.ChipID = 0;
     s.ControllerID = 1;
-    strncpy(s.companyID, "DEFAULT", sizeof(s.companyID) - 1);
+    strlcpy(s.companyID, "DEFAULT", sizeof(s.companyID));
     s.flags = 0;
     s.timeout = 1000;
     s.brightness = 80;
@@ -263,6 +301,8 @@ NVSStorageAB<Settings> storage(
 - se il formato è vecchio lo risalva automaticamente nel formato corrente;
 - se non esiste nessuna copia valida, inizializza e salva i default.
 
+Se una copia esiste ma non può essere letta (errore NVS o memoria esaurita), entrambe le funzioni restituiscono l'errore (`READ_ERROR`, `OUT_OF_MEMORY`, ...) con i default in RAM e **non sovrascrivono** la NVS. Per lo stesso motivo `save()` rifiuta di scrivere se uno dei due slot non è leggibile: potrebbe contenere la copia più recente.
+
 Uso tipico:
 
 ```cpp
@@ -335,7 +375,7 @@ dataStorage.save(data);
 | `UNCHANGED` | Dati identici; nessuna scrittura effettuata |
 | `DEFAULTS_LOADED` | Nessuna copia valida; sono stati usati i default |
 | `NVS_OPEN_ERROR` | Impossibile aprire namespace NVS |
-| `READ_ERROR` | Errore di lettura |
+| `READ_ERROR` | Errore di lettura (nessuna scrittura effettuata) |
 | `WRITE_ERROR` | Errore di scrittura |
 | `VERIFY_ERROR` | La verifica post-scrittura è fallita |
 | `INVALID_HEADER` | Header non valido |
@@ -399,6 +439,10 @@ ESP32 NVS limita i nomi. La libreria richiede:
 ### 5. Versioni future
 
 Se viene trovata una copia valida con `version > currentVersion`, la libreria restituisce `FUTURE_VERSION` invece di interpretarla come una struttura vecchia. Questo evita downgrade firmware potenzialmente distruttivi.
+
+### 6. Più task
+
+Un oggetto `NVSStorageAB` non è protetto da mutex: se `load()`/`save()` dello stesso storage possono essere chiamati da task FreeRTOS diversi, serializzare le chiamate (ad esempio con un `SemaphoreHandle_t`). Storage diversi (namespace/baseKey diversi) possono essere usati in parallelo.
 
 ## Esempi inclusi
 

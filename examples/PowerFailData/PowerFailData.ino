@@ -23,7 +23,12 @@ NVSStorageAB<LCORxData> dataStorage("LCORx", "data", 1, defaultData);
 volatile bool powerFailIRQ = false;
 bool powerFailHandled = false;
 
-void IRAM_ATTR onPowerFail() {
+// Declared once with IRAM_ATTR and defined without it: the .ino-to-.cpp
+// conversion (PlatformIO) would otherwise emit a second IRAM_ATTR prototype
+// with a different section name and trigger a -Wattributes warning.
+void IRAM_ATTR onPowerFail();
+
+void onPowerFail() {
   // Never write NVS from an ISR.
   powerFailIRQ = true;
 }

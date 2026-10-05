@@ -14,7 +14,7 @@ void defaultSettings(LCORxSettings &s) {
   // NVSStorageAB has already zeroed the whole struct, including padding.
   s.ChipID = 0;
   s.ControllerID = 1;
-  strncpy(s.companyID, "DEFAULT", sizeof(s.companyID) - 1);
+  strlcpy(s.companyID, "DEFAULT", sizeof(s.companyID));
   s.flags = 0;
   s.timeout = 1000;
   s.brightness = 80;
