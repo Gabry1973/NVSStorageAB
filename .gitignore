@@ -1,0 +1,31 @@
+# Build / compiled output
+build/
+dist/
+bin/
+*.o
+*.a
+*.elf
+*.bin
+*.hex
+*.map
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolib/
+
+# Arduino / IDE / editor state
+.arduino/
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs / temp
+*.log
+*.tmp

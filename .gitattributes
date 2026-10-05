@@ -1,0 +1,14 @@
+# Normalise line endings to LF in the repository
+* text=auto
+
+*.ino text
+*.h text
+*.cpp text
+*.md text
+*.txt text
+library.properties text
+
+# Binary assets
+*.bin binary
+*.elf binary
+*.hex binary
