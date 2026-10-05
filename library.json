@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Robust A/B NVS storage for trivially copyable ESP32 structures: CRC32 validation, sequence-based A/B recovery, versioning, migrations, auto-upgrade, write verification and anti-wear.",
   "keywords": "esp32, nvs, preferences, storage, eeprom, settings, crc32, power-fail",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gabry1973/NVSStorageAB.git"
+  },
+  "homepage": "https://github.com/Gabry1973/NVSStorageAB",
   "authors": [
     {
       "name": "Gabriele Bordignon",
@@ -25,17 +30,23 @@
     {
       "name": "BasicSettings",
       "base": "examples/BasicSettings",
-      "files": ["BasicSettings.ino"]
+      "files": [
+        "BasicSettings.ino"
+      ]
     },
     {
       "name": "PowerFailData",
       "base": "examples/PowerFailData",
-      "files": ["PowerFailData.ino"]
+      "files": [
+        "PowerFailData.ino"
+      ]
     },
     {
       "name": "VersionUpgrade",
       "base": "examples/VersionUpgrade",
-      "files": ["VersionUpgrade.ino"]
+      "files": [
+        "VersionUpgrade.ino"
+      ]
     }
   ]
 }

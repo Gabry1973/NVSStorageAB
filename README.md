@@ -55,7 +55,7 @@ framework = arduino
 board = esp32dev
 lib_deps =
     ; da repository git
-    https://github.com/<utente>/NVSStorageAB.git
+    https://github.com/Gabry1973/NVSStorageAB.git
     ; oppure da una copia locale (le modifiche sono viste subito)
     ; symlink://D:/percorso/NVSStorageAB
 ```
