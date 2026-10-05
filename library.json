@@ -5,7 +5,7 @@
   "keywords": "esp32, nvs, preferences, storage, eeprom, settings, crc32, power-fail",
   "authors": [
     {
-      "name": "OpenAI",
+      "name": "Gabriele Bordignon",
       "maintainer": true
     }
   ],
